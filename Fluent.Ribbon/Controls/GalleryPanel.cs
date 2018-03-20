@@ -508,7 +508,7 @@ namespace Fluent
                 if (dictionary.ContainsKey(propertyValue) == false)
                 {
                     var galleryGroupContainer = new GalleryGroupContainer();
-                    if (this.IsUseTranslateGroupName)
+                    if (this.IsUseTranslateGroupName && propertyValue.StartsWith("##", StringComparison.Ordinal) == true)
                     {
                         galleryGroupContainer.SetResourceReference(GalleryGroupContainer.HeaderProperty, propertyValue);
                     }

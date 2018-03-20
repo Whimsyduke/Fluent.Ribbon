@@ -21,12 +21,12 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\bin\Fluent\Releasev4.6.2\</OutputPath>
     <IntermediateOutputPath>$(SolutionDir)\obj\$(AssemblyName)\$(Configuration)$(TargetFrameworkVersion)\</IntermediateOutputPath>
     <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS;NET462</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\Fluent.xml</DocumentationFile>
+    <DocumentationFile>..\bin\Fluent\Releasev4.6.2\Fluent.xml</DocumentationFile>
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <CodeAnalysisRules>
     </CodeAnalysisRules>
