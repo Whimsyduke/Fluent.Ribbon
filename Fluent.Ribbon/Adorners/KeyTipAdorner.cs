@@ -147,9 +147,8 @@ namespace Fluent
         private void GenerateAndAddRegularKeyTipInformations(string keys, FrameworkElement child, bool hide)
         {
             IEnumerable<KeyTipInformation> informations;
-            var keyTipInformationProvider = child as IKeyTipInformationProvider;
 
-            if (keyTipInformationProvider != null)
+            if (child is IKeyTipInformationProvider keyTipInformationProvider)
             {
                 informations = keyTipInformationProvider.GetKeyTipInformations(hide);
             }
@@ -437,7 +436,7 @@ namespace Fluent
         /// <returns>The <see cref="KeyTipInformation"/> associated with <paramref name="keys"/>.</returns>
         private KeyTipInformation TryGetKeyTipInformation(string keys)
         {
-            return this.keyTipInformations.FirstOrDefault(x => x.IsEnabled && x.Visibility == Visibility.Visible && keys.Equals(x.Keys, StringComparison.CurrentCultureIgnoreCase));
+            return this.keyTipInformations.FirstOrDefault(x => x.IsEnabled && x.Visibility == Visibility.Visible && keys.Equals(x.Keys, StringComparison.OrdinalIgnoreCase));
         }
 
         /// <summary>
@@ -622,7 +621,7 @@ namespace Fluent
 
                     keyTipInformation.Position = keyTipInformation.VisualTarget.TranslatePoint(new Point(x, y), this.AdornedElement);
                 }
-                else if (keyTipInformation.AssociatedElement.Name == "PART_DialogLauncherButton")
+                else if (string.Equals(keyTipInformation.AssociatedElement.Name, "PART_DialogLauncherButton", StringComparison.Ordinal))
                 {
                     // Dialog Launcher Button Exclusive Placement
                     var keyTipSize = keyTipInformation.KeyTip.DesiredSize;
@@ -851,8 +850,7 @@ namespace Fluent
         {
             var name = control.GetType().Name;
 
-            var headeredControl = control as IHeaderedControl;
-            if (headeredControl != null)
+            if (control is IHeaderedControl headeredControl)
             {
                 name += $" ({headeredControl.Header})";
             }

@@ -114,6 +114,31 @@ namespace Fluent
 
         #endregion
 
+        #region IsUseTranslateGroupName
+
+        /// <summary>
+        /// How to show Group Names
+        /// if True, get name by resources.
+        /// </summary>
+        public bool IsUseTranslateGroupName
+        {
+            get { return (bool)this.GetValue(IsUseTranslateGroupNameProperty); }
+            set { this.SetValue(IsUseTranslateGroupNameProperty, value); }
+        }
+
+        /// <summary>
+        /// Using a DependencyProperty as the backing store for IsUseTranslateGroupName.
+        /// This enables animation, styling, binding, etc...
+        /// </summary>
+        public static readonly DependencyProperty IsUseTranslateGroupNameProperty = DependencyProperty.Register(nameof(IsUseTranslateGroupName), typeof(bool), typeof(GalleryPanel), new PropertyMetadata(OnIsUseTranslateGroupNameChanged));
+
+        private static void OnIsUseTranslateGroupNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var galleryPanel = (GalleryPanel)d;
+            galleryPanel.Invalidate();
+        }
+        #endregion
+
         #region ItemContainerGenerator
 
         /// <summary>
@@ -359,8 +384,7 @@ namespace Fluent
 
             for (var i = 0; i < VisualTreeHelper.GetChildrenCount(visual); i++)
             {
-                var element = VisualTreeHelper.GetChild(visual, i) as UIElement;
-                if (element != null)
+                if (VisualTreeHelper.GetChild(visual, i) is UIElement element)
                 {
                     InvalidateMeasureRecursive(element);
                 }
@@ -483,10 +507,16 @@ namespace Fluent
 
                 if (dictionary.ContainsKey(propertyValue) == false)
                 {
-                    var galleryGroupContainer = new GalleryGroupContainer
+                    var galleryGroupContainer = new GalleryGroupContainer();
+                    if (this.IsUseTranslateGroupName)
                     {
-                        Header = propertyValue
-                    };
+                        galleryGroupContainer.SetResourceReference(GalleryGroupContainer.HeaderProperty, propertyValue);
+                    }
+                    else
+                    {
+                        galleryGroupContainer.Header = propertyValue;
+                    }
+
                     RibbonControl.Bind(this, galleryGroupContainer, nameof(this.GroupStyle), GroupStyleProperty, BindingMode.OneWay);
                     RibbonControl.Bind(this, galleryGroupContainer, nameof(this.Orientation), GalleryGroupContainer.OrientationProperty, BindingMode.OneWay);
                     RibbonControl.Bind(this, galleryGroupContainer, nameof(this.ItemWidth), GalleryGroupContainer.ItemWidthProperty, BindingMode.OneWay);
