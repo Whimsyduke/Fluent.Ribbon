@@ -180,14 +180,12 @@ namespace Fluent
         {
             var element = (InRibbonGallery)d;
 
-            var oldElement = e.OldValue as FrameworkElement;
-            if (oldElement != null)
+            if (e.OldValue is FrameworkElement oldElement)
             {
                 element.RemoveLogicalChild(oldElement);
             }
 
-            var newElement = e.NewValue as FrameworkElement;
-            if (newElement != null)
+            if (e.NewValue is FrameworkElement newElement)
             {
                 element.AddLogicalChild(newElement);
             }
@@ -307,6 +305,26 @@ namespace Fluent
 
         #endregion
 
+        #region IsUseTranslateGroupName
+
+        /// <summary>
+        /// How to show Group Names
+        /// if True, get name by resources.
+        /// </summary>
+        public bool IsUseTranslateGroupName
+        {
+            get { return (bool)this.GetValue(IsUseTranslateGroupNameProperty); }
+            set { this.SetValue(IsUseTranslateGroupNameProperty, value); }
+        }
+
+        /// <summary>
+        /// Using a DependencyProperty as the backing store for IsUseTranslateGroupName.
+        /// This enables animation, styling, binding, etc...
+        /// </summary>
+        public static readonly DependencyProperty IsUseTranslateGroupNameProperty = DependencyProperty.Register(nameof(IsUseTranslateGroupName), typeof(bool), typeof(InRibbonGallery), new PropertyMetadata());
+
+        #endregion
+
         #region Orientation
 
         /// <summary>
@@ -361,10 +379,17 @@ namespace Fluent
                             var filter = item;
                             var menuItem = new MenuItem
                             {
-                                Header = filter.Title,
                                 Tag = filter,
                                 IsDefinitive = false
                             };
+                            if (this.IsUseTranslateGroupName)
+                            {
+                                menuItem.SetResourceReference(MenuItem.HeaderProperty, filter.Title);
+                            }
+                            else
+                            {
+                                menuItem.Header = filter.Title;
+                            }
 
                             if (ReferenceEquals(filter, this.SelectedFilter))
                             {
@@ -398,10 +423,17 @@ namespace Fluent
                             var filter = item;
                             var menuItem = new MenuItem
                             {
-                                Header = filter.Title,
                                 Tag = filter,
                                 IsDefinitive = false
                             };
+                            if (this.IsUseTranslateGroupName)
+                            {
+                                menuItem.SetResourceReference(MenuItem.HeaderProperty, filter.Title);
+                            }
+                            else
+                            {
+                                menuItem.Header = filter.Title;
+                            }
 
                             if (ReferenceEquals(filter, this.SelectedFilter))
                             {
@@ -453,9 +485,8 @@ namespace Fluent
         private static void OnFilterChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var gallery = (InRibbonGallery)d;
-            var oldFilter = e.OldValue as GalleryGroupFilter;
 
-            if (oldFilter != null)
+            if (e.OldValue is GalleryGroupFilter oldFilter)
             {
                 System.Windows.Controls.MenuItem menuItem = gallery.GetFilterMenuItem(oldFilter);
 
@@ -465,11 +496,17 @@ namespace Fluent
                 }
             }
 
-            var filter = e.NewValue as GalleryGroupFilter;
-
-            if (filter != null)
+            if (e.NewValue is GalleryGroupFilter filter)
             {
-                gallery.SelectedFilterTitle = filter.Title;
+                if (gallery.IsUseTranslateGroupName)
+                {
+                    gallery.SetResourceReference(InRibbonGallery.SelectedFilterTitleProperty, filter.Title);
+                }
+                else
+                {
+                    gallery.SelectedFilterTitle = filter.Title;
+                }
+
                 gallery.SelectedFilterGroups = filter.Groups;
                 System.Windows.Controls.MenuItem menuItem = gallery.GetFilterMenuItem(filter);
 
@@ -493,17 +530,25 @@ namespace Fluent
         public string SelectedFilterTitle
         {
             get { return (string)this.GetValue(SelectedFilterTitleProperty); }
-            private set { this.SetValue(SelectedFilterTitlePropertyKey, value); }
+            set { this.SetValue(SelectedFilterTitleProperty, value); }
         }
 
-        private static readonly DependencyPropertyKey SelectedFilterTitlePropertyKey =
-            DependencyProperty.RegisterReadOnly(nameof(SelectedFilterTitle), typeof(string), typeof(InRibbonGallery), new PropertyMetadata());
+        //public string SelectedFilterTitle
+        //{
+        //    get { return (string)this.GetValue(SelectedFilterTitleProperty); }
+        //    private set { this.SetValue(SelectedFilterTitlePropertyKey, value); }
+        //}
+
+        //private static readonly DependencyPropertyKey SelectedFilterTitlePropertyKey =
+        //    DependencyProperty.RegisterReadOnly(nameof(SelectedFilterTitle), typeof(string), typeof(InRibbonGallery), new PropertyMetadata());
 
         /// <summary>
         /// Using a DependencyProperty as the backing store for SelectedFilterTitle.
         /// This enables animation, styling, binding, etc...
         /// </summary>
-        public static readonly DependencyProperty SelectedFilterTitleProperty = SelectedFilterTitlePropertyKey.DependencyProperty;
+        public static readonly DependencyProperty SelectedFilterTitleProperty =
+            DependencyProperty.Register(nameof(SelectedFilterTitle), typeof(string), typeof(InRibbonGallery), new PropertyMetadata());
+        //public static readonly DependencyProperty SelectedFilterTitleProperty = SelectedFilterTitlePropertyKey.DependencyProperty;
 
         /// <summary>
         /// Gets selected filter groups
@@ -558,8 +603,10 @@ namespace Fluent
                 return null;
             }
 
+            //return this.groupsMenuButton?.Items.Cast<MenuItem>()
+            //    .FirstOrDefault(item => item != null && string.Equals(item.Header.ToString(), filter.Title, StringComparison.Ordinal));
             return this.groupsMenuButton?.Items.Cast<MenuItem>()
-                .FirstOrDefault(item => item != null && item.Header.ToString() == filter.Title);
+                .FirstOrDefault(item => item != null && item.Tag as GalleryGroupFilter == filter);
         }
 
         #endregion
@@ -1018,8 +1065,7 @@ namespace Fluent
         {
             foreach (var item in e.RemovedItems)
             {
-                var itemContainer = this.ItemContainerGenerator.ContainerFromItem(item) as GalleryItem;
-                if (itemContainer != null)
+                if (this.ItemContainerGenerator.ContainerFromItem(item) is GalleryItem itemContainer)
                 {
                     itemContainer.IsSelected = false;
                 }
@@ -1027,8 +1073,7 @@ namespace Fluent
 
             foreach (var item in e.AddedItems)
             {
-                var itemContainer = this.ItemContainerGenerator.ContainerFromItem(item) as GalleryItem;
-                if (itemContainer != null)
+                if (this.ItemContainerGenerator.ContainerFromItem(item) is GalleryItem itemContainer)
                 {
                     itemContainer.IsSelected = true;
                 }
@@ -1129,10 +1174,17 @@ namespace Fluent
                 {
                     var item = new MenuItem
                     {
-                        Header = currentFilter.Title,
                         Tag = currentFilter,
                         IsDefinitive = false
                     };
+                    if (this.IsUseTranslateGroupName)
+                    {
+                        item.SetResourceReference(MenuItem.HeaderProperty, currentFilter.Title);
+                    }
+                    else
+                    {
+                        item.Header = currentFilter.Title;
+                    }
 
                     if (ReferenceEquals(currentFilter, this.SelectedFilter))
                     {

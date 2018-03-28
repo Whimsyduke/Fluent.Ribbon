@@ -349,7 +349,8 @@
                                                      Filter="{TemplateBinding SelectedFilterGroups}"
                                                      GroupBy="{TemplateBinding GroupBy}"
                                                      GroupByAdvanced="{TemplateBinding GroupByAdvanced}"
-                                                     IsGrouped="False" />
+                                                     IsGrouped="False"
+                                                     IsUseTranslateGroupName="{TemplateBinding IsUseTranslateGroupName}"/>
                             </ContentControl>
                             <Image x:Name="PART_FakeImage"
                                    Visibility="Collapsed" />
